@@ -2,8 +2,9 @@ Function Encipher([string]$key, [string]$plaintext) {
   [string]$cipherText = [string]::Empty
 
   [char]$character
-  for ($index = 0; $index -lt $plaintext.Length; ++$index) {
-    $character = $plaintext[$index]
+  $keyIndex = 0
+  for ($textIndex = 0; $textIndex -lt $plaintext.Length; ++$textIndex) {
+    $character = $plaintext[$textIndex]
 
     # Write-Host "$character $($character.GetType())"
 
@@ -25,7 +26,7 @@ Function Encipher([string]$key, [string]$plaintext) {
 
     if ($isLowerCase -or $isUpperCase) {
       # -or $isNumerical
-      $character = [char]([byte][char]$character + ([char]::ToLower($key[$index % $key.Length]) - [byte][char]'a'))
+      $character = [char]([byte][char]$character + ([char]::ToLower($key[$keyIndex % $key.Length]) - [byte][char]'a'))
 
       # Write-Host "$character $($character.GetType())"
 
@@ -36,6 +37,9 @@ Function Encipher([string]$key, [string]$plaintext) {
         elseif ($character.CompareTo([char]'z') -gt 0) {
           $character = [char]([byte][char]'a' + ([byte][char]$character - [byte][char]'z') - 1)
         }
+
+        # Write-Host "$([char]::ToLower($key[$keyIndex % $key.Length])) is an offset of $([char]::ToLower($key[$keyIndex % $key.Length]) - [byte][char]'a'). $($plaintext[$textIndex]) becomes $character"
+        ++$keyIndex
       }
       elseif ($isUpperCase) {
         if (($character.CompareTo([char]'A')) -lt 0) {
@@ -44,6 +48,9 @@ Function Encipher([string]$key, [string]$plaintext) {
         elseif ($character.CompareTo([char]'Z') -gt 0) {
           $character = [char]([byte][char]'A' + ([byte][char]$character - [byte][char]'Z') - 1)
         }
+
+        # Write-Host "$([char]::ToLower($key[$keyIndex % $key.Length])) is an offset of $([char]::ToLower($key[$keyIndex % $key.Length]) - [byte][char]'a'). $($plaintext[$textIndex]) becomes $character"
+        ++$keyIndex
       }
       # elseif ($isNumerical) {
       #   if (($character.CompareTo([char]'0')) -lt 0) {
@@ -54,8 +61,6 @@ Function Encipher([string]$key, [string]$plaintext) {
       #   }
       # }
     }
-
-    # Write-Host "$([char]::ToLower($key[$index % $key.Length])) is an offset of $([char]::ToLower($key[$index % $key.Length]) - [byte][char]'a'). $($plaintext[$index]) becomes $character"
 
     $cipherText += $character
   }
